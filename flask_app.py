@@ -73,10 +73,11 @@ def proxy_video():
     if not video_url:
         return "No URL", 400
     try:
-        with httpx.Client(timeout=30) as client:
+        with httpx.Client(timeout=60, follow_redirects=True) as client:
             r = client.get(video_url, headers={
-                "User-Agent": "Mozilla/5.0",
-                "Referer": "https://www.tiktok.com/"
+                "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36",
+                "Referer": "https://www.tiktok.com/",
+                "Accept": "*/*"
             })
             return Response(
                 r.content,

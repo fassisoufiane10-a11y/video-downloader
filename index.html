@@ -1,87 +1,277 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pro Downloader - Free Premium Video Downloader</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <style>
-        body { background: radial-gradient(circle at top, #1e1b4b, #090514); }
-        .neon-glow { box-shadow: 0 0 20px rgba(139, 92, 246, 0.3); }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pro Downloader - Download Videos In Seconds</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:#000;color:#cbd5e1;font-family:Arial,sans-serif;min-height:100vh}
+.ph{background:#080808;border-bottom:1px solid rgba(168,85,247,0.2);padding:14px 28px;display:flex;justify-content:space-between;align-items:center}
+.plogo{display:flex;align-items:center;gap:10px}
+.plogo-badge{background:linear-gradient(135deg,#7c3aed,#ec4899);border-radius:10px;width:36px;height:36px;display:flex;align-items:center;justify-content:center}
+.plogo-name{font-size:15px;font-weight:800;letter-spacing:2px;background:linear-gradient(135deg,#a855f7,#ec4899);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.pnav{display:flex;gap:24px;font-size:12px}
+.pnav a{color:#64748b;text-decoration:none}
+.pad{background:rgba(168,85,247,0.03);border-bottom:1px solid rgba(168,85,247,0.1);padding:10px 28px}
+.pad-slot{max-width:728px;margin:0 auto;height:52px;border:1px dashed rgba(168,85,247,0.15);border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:10px;color:#2d2d3a}
+.phero{padding:48px 28px 24px;text-align:center}
+.phero-tag{display:inline-block;background:rgba(168,85,247,0.1);color:#c084fc;font-size:10px;padding:4px 16px;border-radius:999px;margin-bottom:18px;letter-spacing:1.5px;font-weight:700;border:1px solid rgba(168,85,247,0.2)}
+.phero h1{font-size:36px;font-weight:900;color:#fff;line-height:1.15;margin-bottom:12px}
+.phero h1 em{font-style:normal;background:linear-gradient(135deg,#a855f7,#ec4899);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.phero p{font-size:13px;color:#475569;max-width:420px;margin:0 auto;line-height:1.7}
+.ptabs{display:flex;gap:6px;justify-content:center;margin:22px 0 0;flex-wrap:wrap}
+.ptab{display:flex;align-items:center;gap:6px;padding:8px 18px;border-radius:8px;border:1px solid rgba(168,85,247,0.12);font-size:11px;color:#475569;cursor:pointer;background:#0a0a0a}
+.ptab.active{background:rgba(168,85,247,0.1);border-color:rgba(168,85,247,0.35);color:#c084fc;font-weight:600}
+.pmain{padding:24px 28px}
+.pbox{background:#080808;border:1px solid rgba(168,85,247,0.18);border-radius:16px;padding:26px;max-width:600px;margin:0 auto 24px}
+.plimit{display:flex;justify-content:space-between;align-items:center;margin-bottom:18px}
+.plimit-text{font-size:11px;color:#334155}
+.plimit-pills{display:flex;gap:4px}
+.plimit-pill{width:28px;height:6px;border-radius:999px;background:linear-gradient(135deg,#7c3aed,#ec4899)}
+.plimit-pill.empty{background:#1a1a2e}
+.pinput-row{display:flex;gap:10px}
+.pinput-wrap{flex:1;position:relative}
+.pinput-wrap input{width:100%;padding:14px 16px 14px 44px;background:#000;border:1px solid rgba(168,85,247,0.18);border-radius:10px;color:#e2e8f0;font-size:13px;outline:none}
+.pinput-wrap input:focus{border-color:#a855f7}
+.pinput-wrap input::placeholder{color:#2d2d3a}
+.pinput-wrap i{position:absolute;left:15px;top:50%;transform:translateY(-50%);color:#7c3aed;font-size:17px}
+.pbtn{padding:14px 24px;background:linear-gradient(135deg,#7c3aed,#ec4899);border:none;border-radius:10px;color:#fff;font-size:13px;font-weight:800;cursor:pointer;white-space:nowrap}
+.presult{margin-top:18px;background:#000;border:1px solid rgba(168,85,247,0.12);border-radius:12px;padding:16px;display:none}
+.presult-top{display:flex;gap:14px;align-items:flex-start;margin-bottom:12px}
+.pthumb{width:112px;height:72px;background:rgba(168,85,247,0.06);border-radius:8px;flex-shrink:0;overflow:hidden;border:1px solid rgba(168,85,247,0.15)}
+.pthumb img{width:100%;height:100%;object-fit:cover}
+.presult-info{flex:1}
+.presult-title{font-size:12px;font-weight:600;color:#e2e8f0;margin-bottom:8px;line-height:1.5}
+.presult-badges{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px}
+.pbadge{display:inline-flex;align-items:center;gap:4px;padding:3px 10px;border-radius:999px;font-size:10px;font-weight:700}
+.pbadge-green{background:rgba(16,185,129,0.12);color:#10b981;border:1px solid rgba(16,185,129,0.2)}
+.pbadge-purple{background:rgba(168,85,247,0.1);color:#c084fc;border:1px solid rgba(168,85,247,0.2)}
+.pbadge-blue{background:rgba(59,130,246,0.1);color:#60a5fa;border:1px solid rgba(59,130,246,0.2)}
+.presult-hint{font-size:10px;color:#334155;padding:8px 12px;background:rgba(168,85,247,0.05);border-radius:6px;border:1px solid rgba(168,85,247,0.08)}
+.presult-hint span{color:#c084fc}
+.pdl-row{display:flex;gap:8px;margin-top:12px}
+.pdl-btn{flex:1;display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:10px;background:linear-gradient(135deg,#059669,#10b981);border-radius:8px;color:#fff;font-size:11px;font-weight:800;border:none;cursor:pointer;text-transform:uppercase;letter-spacing:0.5px;text-decoration:none}
+.pdl-btn2{padding:10px 16px;background:rgba(168,85,247,0.1);border-radius:8px;color:#c084fc;font-size:11px;font-weight:700;border:1px solid rgba(168,85,247,0.2);cursor:pointer}
+.perror{margin-top:14px;padding:10px 16px;background:rgba(239,68,68,0.08);border:1px solid rgba(239,68,68,0.2);border-radius:8px;color:#f87171;font-size:12px;display:none;text-align:center}
+.ploading{margin-top:14px;text-align:center;display:none;color:#a855f7;font-size:13px}
+.pstats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;max-width:600px;margin:0 auto 24px}
+.pstat{background:#080808;border:1px solid rgba(168,85,247,0.12);border-radius:10px;padding:16px;text-align:center}
+.pstat-num{font-size:22px;font-weight:900;background:linear-gradient(135deg,#a855f7,#ec4899);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:4px}
+.pstat-label{font-size:10px;color:#334155}
+.pfeatures{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;max-width:600px;margin:0 auto 24px}
+.pfeat{background:#080808;border:1px solid rgba(168,85,247,0.1);border-radius:10px;padding:16px}
+.pfeat-icon{width:32px;height:32px;border-radius:8px;display:flex;align-items:center;justify-content:center;margin-bottom:10px}
+.pfeat h4{font-size:11px;font-weight:700;color:#e2e8f0;margin-bottom:4px}
+.pfeat p{font-size:10px;color:#334155;line-height:1.6}
+.pfooter{background:#080808;border-top:1px solid rgba(168,85,247,0.1);padding:16px 28px;display:flex;justify-content:space-between;align-items:center;font-size:11px;color:#1e293b}
+.pfooter a{color:#7c3aed;text-decoration:none;margin-left:16px}
+.page{display:none}
+.page.active{display:block}
+@media(max-width:500px){.pinput-row{flex-direction:column}.pstats,.pfeatures{grid-template-columns:1fr}.ph{flex-direction:column;gap:10px}}
+</style>
 </head>
-<body class="text-gray-200 min-h-screen flex flex-col justify-between font-sans">
-    <header class="border-b border-purple-900/40 bg-black/20 backdrop-blur-md sticky top-0 z-50">
-        <div class="max-w-5xl mx-auto px-4 py-4 flex justify-between items-center">
-            <div class="flex items-center space-x-2">
-                <i class="fa-solid fa-cloud-arrow-down text-purple-500 text-2xl animate-pulse"></i>
-                <span class="text-xl font-black tracking-wider bg-clip-text text-transparent bg-gradient-to-r from-purple-400 to-pink-500">PRO DOWNLOADER</span>
-            </div>
+<body>
+
+<div class="ph">
+  <div class="plogo">
+    <div class="plogo-badge"><i class="fa-solid fa-cloud-arrow-down" style="color:#fff;font-size:16px"></i></div>
+    <span class="plogo-name">PRO DOWNLOADER</span>
+  </div>
+  <nav class="pnav">
+    <a href="#" onclick="showPage('home')">Home</a>
+    <a href="#" onclick="showPage('terms')">Terms</a>
+    <a href="#" onclick="showPage('privacy')">Privacy</a>
+  </nav>
+</div>
+
+<div class="pad">
+  <div class="pad-slot">Advertisement — Google AdSense 728×90</div>
+</div>
+
+<!-- Home -->
+<div id="page-home" class="page active">
+<div class="phero">
+  <div class="phero-tag">✦ FREE · NO WATERMARK · HD QUALITY</div>
+  <h1>Download Videos<br><em>In Seconds</em></h1>
+  <p>TikTok, Instagram, YouTube, Facebook — original quality, no watermark, completely free.</p>
+  <div class="ptabs">
+    <div class="ptab active" onclick="setTab(this,'tiktok')"><i class="fa-brands fa-tiktok"></i> TikTok</div>
+    <div class="ptab" onclick="setTab(this,'instagram')"><i class="fa-brands fa-instagram"></i> Instagram</div>
+    <div class="ptab" onclick="setTab(this,'youtube')"><i class="fa-brands fa-youtube"></i> YouTube</div>
+    <div class="ptab" onclick="setTab(this,'facebook')"><i class="fa-brands fa-facebook"></i> Facebook</div>
+  </div>
+</div>
+
+<div class="pmain">
+  <div class="pbox">
+    <div class="plimit">
+      <span class="plimit-text">Daily downloads: <span id="remaining">5</span> remaining</span>
+      <div class="plimit-pills" id="pills">
+        <div class="plimit-pill"></div>
+        <div class="plimit-pill"></div>
+        <div class="plimit-pill"></div>
+        <div class="plimit-pill"></div>
+        <div class="plimit-pill"></div>
+      </div>
+    </div>
+    <div class="pinput-row">
+      <div class="pinput-wrap">
+        <i class="fa-solid fa-link"></i>
+        <input type="text" id="urlInput" placeholder="Paste TikTok, Instagram or YouTube link..." />
+      </div>
+      <button class="pbtn" onclick="fetchVideo()"><i class="fa-solid fa-download"></i> Download</button>
+    </div>
+    <div class="ploading" id="loading"><i class="fa-solid fa-spinner fa-spin"></i> Analyzing video...</div>
+    <div class="perror" id="error"></div>
+    <div class="presult" id="result">
+      <div class="presult-top">
+        <div class="pthumb"><img id="thumb" src="" /></div>
+        <div class="presult-info">
+          <div class="presult-title" id="title"></div>
+          <div class="presult-badges">
+            <span class="pbadge pbadge-green"><i class="fa-solid fa-check"></i> No Watermark</span>
+            <span class="pbadge pbadge-purple"><i class="fa-solid fa-sparkles"></i> HD Quality</span>
+            <span class="pbadge pbadge-blue"><i class="fa-solid fa-mobile"></i> MP4</span>
+          </div>
         </div>
-    </header>
-    <main class="max-w-4xl mx-auto px-4 py-12 flex-grow w-full">
-        <div class="text-center mb-10">
-            <h1 class="text-4xl md:text-5xl font-extrabold mb-4 text-white">Download Videos <span class="bg-clip-text text-transparent bg-gradient-to-r from-purple-400 to-pink-500">In Seconds</span></h1>
-            <p class="text-gray-400 text-sm md:text-base">Support YouTube, TikTok, Instagram, Facebook. No limits, completely free.</p>
-        </div>
-        <div class="bg-black/40 border border-purple-900/50 p-6 rounded-2xl neon-glow backdrop-blur-md max-w-2xl mx-auto mb-12">
-            <form id="downloadForm" class="space-y-4">
-                <div class="relative flex items-center">
-                    <i class="fa-solid fa-link absolute left-4 text-purple-400"></i>
-                    <input type="url" id="videoUrl" placeholder="Paste video link here..." required class="w-full pl-11 pr-4 py-4 bg-purple-950/20 border border-purple-900/60 rounded-xl focus:outline-none focus:border-pink-500 text-white placeholder-gray-500 transition text-sm">
-                </div>
-                <button type="submit" class="w-full py-4 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 text-white font-bold rounded-xl transition flex items-center justify-center space-x-2 shadow-lg">
-                    <i class="fa-solid fa-circle-down"></i><span>Fetch Video Links</span>
-                </button>
-            </form>
-            <div id="loader" class="hidden mt-8 text-center">
-                <div class="inline-block animate-spin rounded-full h-8 w-8 border-4 border-purple-500 border-t-transparent mb-2"></div>
-                <p class="text-sm text-purple-300 animate-pulse">Analyzing video source, please wait...</p>
-            </div>
-            <div id="result" class="hidden mt-8 p-4 bg-purple-950/30 border border-purple-500/30 rounded-xl space-y-4">
-                <div class="flex flex-col md:flex-row items-center space-y-4 md:space-y-0 md:space-x-4">
-                    <img id="videoThumb" src="" alt="Thumbnail" class="w-full md:w-36 h-24 object-cover rounded-lg border border-purple-900/60">
-                    <div class="flex-grow text-center md:text-left">
-                        <h3 id="videoTitle" class="text-sm font-semibold text-white line-clamp-2 mb-1">Video Title</h3>
-                        <p class="text-xs text-gray-400 mb-3">Duration: <span id="videoDuration" class="text-purple-400 font-bold">0:00</span></p>
-                        <a id="downloadBtn" href="" target="_blank" rel="noopener noreferrer" class="inline-flex items-center space-x-2 px-6 py-2.5 bg-green-600 hover:bg-green-500 text-white font-bold text-xs rounded-lg transition uppercase tracking-wider">
-                            <i class="fa-solid fa-download"></i><span>Download Direct MP4</span>
-                        </a>
-                    </div>
-                </div>
-            </div>
-            <div id="errorMessage" class="hidden mt-6 p-3 bg-red-950/40 border border-red-800/50 text-red-400 text-xs rounded-xl text-center"></div>
-        </div>
-    </main>
-    <footer class="text-center py-6 border-t border-purple-900/20 bg-black/40 text-xs text-gray-500">
-        <p>&copy; 2026 Pro Downloader. Built for high performance.</p>
-    </footer>
-    <script>
-        document.getElementById('downloadForm').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const urlInput = document.getElementById('videoUrl').value;
-            const loader = document.getElementById('loader');
-            const result = document.getElementById('result');
-            const errorDiv = document.getElementById('errorMessage');
-            loader.classList.remove('hidden'); result.classList.add('hidden'); errorDiv.classList.add('hidden');
-            try {
-                const response = await fetch('/download', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ url: urlInput })
-                });
-                const data = await response.json();
-                if (!response.ok || data.status === 'error') throw new Error(data.message || 'Failed to fetch video');
-                document.getElementById('videoTitle').innerText = data.title;
-                document.getElementById('videoDuration').innerText = data.duration;
-                document.getElementById('videoThumb').src = data.thumbnail || 'https://via.placeholder.com/150';
-                document.getElementById('downloadBtn').href = data.download_url;
-                result.classList.remove('hidden');
-            } catch (err) {
-                errorDiv.innerText = err.message; errorDiv.classList.remove('hidden');
-            } finally { loader.classList.add('hidden'); }
-        });
-    </script>
+      </div>
+      <div class="presult-hint">💡 Right-click the button → <span>"Save video as"</span> to download directly</div>
+      <div class="pdl-row">
+        <a id="dlBtn" class="pdl-btn" href="#" target="_blank"><i class="fa-solid fa-download"></i> Download MP4 — No Watermark</a>
+        <button class="pdl-btn2"><i class="fa-solid fa-music"></i> MP3</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="pstats">
+    <div class="pstat"><div class="pstat-num">10M+</div><div class="pstat-label">Videos downloaded</div></div>
+    <div class="pstat"><div class="pstat-num">4</div><div class="pstat-label">Platforms supported</div></div>
+    <div class="pstat"><div class="pstat-num">100%</div><div class="pstat-label">Free forever</div></div>
+  </div>
+
+  <div class="pad" style="margin-bottom:24px"><div class="pad-slot">Advertisement — Google AdSense In-Content</div></div>
+
+  <div class="pfeatures">
+    <div class="pfeat">
+      <div class="pfeat-icon" style="background:rgba(245,158,11,0.1)"><i class="fa-solid fa-bolt" style="color:#f59e0b"></i></div>
+      <h4>Instant download</h4>
+      <p>No waiting, no queue. Results in under 3 seconds.</p>
+    </div>
+    <div class="pfeat">
+      <div class="pfeat-icon" style="background:rgba(16,185,129,0.1)"><i class="fa-solid fa-shield-halved" style="color:#10b981"></i></div>
+      <h4>No watermark</h4>
+      <p>Original quality, clean video with no branding.</p>
+    </div>
+    <div class="pfeat">
+      <div class="pfeat-icon" style="background:rgba(168,85,247,0.1)"><i class="fa-solid fa-mobile" style="color:#a855f7"></i></div>
+      <h4>All devices</h4>
+      <p>Works perfectly on mobile, tablet and desktop.</p>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- Terms -->
+<div id="page-terms" class="page">
+  <div style="max-width:600px;margin:0 auto;padding:40px 28px">
+    <h2 style="color:#fff;font-size:22px;margin-bottom:20px">Terms of Service</h2>
+    <div style="font-size:13px;color:#475569;line-height:1.8;display:flex;flex-direction:column;gap:14px">
+      <p>By using Pro Downloader, you agree to use this service only for personal, non-commercial purposes.</p>
+      <p>You may only download videos that you have the right to download. Downloading copyrighted content without permission is strictly prohibited.</p>
+      <p>We are not responsible for any misuse of downloaded content. The user is solely responsible for how they use the downloaded files.</p>
+      <p>We reserve the right to limit or block access to our service at any time without notice.</p>
+    </div>
+  </div>
+</div>
+
+<!-- Privacy -->
+<div id="page-privacy" class="page">
+  <div style="max-width:600px;margin:0 auto;padding:40px 28px">
+    <h2 style="color:#fff;font-size:22px;margin-bottom:20px">Privacy Policy</h2>
+    <div style="font-size:13px;color:#475569;line-height:1.8;display:flex;flex-direction:column;gap:14px">
+      <p>Pro Downloader does not store any personal information about our users.</p>
+      <p>We do not store the URLs you submit. All processing happens in real-time.</p>
+      <p>We may use cookies to track daily download limits. These cookies do not contain personal information.</p>
+      <p>We may display third-party advertisements. These advertisers may use cookies according to their own privacy policies.</p>
+    </div>
+  </div>
+</div>
+
+<div class="pfooter">
+  <span>© 2026 Pro Downloader — All rights reserved</span>
+  <div><a href="#" onclick="showPage('terms')">Terms</a><a href="#" onclick="showPage('privacy')">Privacy</a></div>
+</div>
+
+<script>
+let dailyCount = parseInt(localStorage.getItem('pdCount') || '0');
+let lastDate = localStorage.getItem('pdDate') || '';
+const today = new Date().toDateString();
+if (lastDate !== today) { dailyCount = 0; localStorage.setItem('pdDate', today); }
+updatePills();
+
+function updatePills() {
+  document.getElementById('remaining').textContent = Math.max(0, 5 - dailyCount);
+  const pills = document.getElementById('pills').children;
+  for (let i = 0; i < 5; i++) {
+    pills[i].className = 'plimit-pill' + (i < (5 - dailyCount) ? '' : ' empty');
+  }
+}
+
+function showPage(p) {
+  document.querySelectorAll('.page').forEach(x => x.classList.remove('active'));
+  document.getElementById('page-' + p).classList.add('active');
+}
+
+function setTab(el, platform) {
+  document.querySelectorAll('.ptab').forEach(t => t.classList.remove('active'));
+  el.classList.add('active');
+}
+
+async function fetchVideo() {
+  if (dailyCount >= 5) {
+    showError('Daily limit reached. Please come back tomorrow.');
+    return;
+  }
+  const url = document.getElementById('urlInput').value.trim();
+  if (!url) { showError('Please paste a video link first.'); return; }
+
+  document.getElementById('loading').style.display = 'block';
+  document.getElementById('error').style.display = 'none';
+  document.getElementById('result').style.display = 'none';
+
+  try {
+    const res = await fetch('/download', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ url })
+    });
+    const data = await res.json();
+    document.getElementById('loading').style.display = 'none';
+    if (data.status === 'error') { showError(data.message); return; }
+    document.getElementById('thumb').src = data.thumbnail || '';
+    document.getElementById('title').textContent = data.title || '';
+    document.getElementById('dlBtn').href = data.download_url || '#';
+    document.getElementById('result').style.display = 'block';
+    dailyCount++;
+    localStorage.setItem('pdCount', dailyCount);
+    updatePills();
+  } catch(e) {
+    document.getElementById('loading').style.display = 'none';
+    showError('Something went wrong. Please try again.');
+  }
+}
+
+function showError(msg) {
+  const el = document.getElementById('error');
+  el.textContent = msg;
+  el.style.display = 'block';
+}
+
+document.getElementById('urlInput').addEventListener('keydown', e => {
+  if (e.key === 'Enter') fetchVideo();
+});
+</script>
 </body>
 </html>

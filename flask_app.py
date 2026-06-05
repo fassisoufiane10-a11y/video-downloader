@@ -1,9 +1,8 @@
 import os
-import tempfile
-from flask import Flask, request, jsonify, send_file, Response
+from flask import Flask, request, jsonify, send_file
 from collections import defaultdict
 from datetime import date
-import yt_dlp
+import httpx
 
 app = Flask(__name__)
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -11,6 +10,9 @@ HTML_PATH = os.path.join(BASE_DIR, 'index.html')
 
 DAILY_LIMIT = 5
 user_downloads = defaultdict(lambda: {"count": 0, "date": str(date.today())})
+
+API_KEY = "88e4bd1c94msh209df9927beaafcp10fbdejsn05050b2447fb"
+API_HOST = "tiktok-downloader-download-tiktok-videos-without-watermark.p.rapidapi.com"
 
 def check_limit(ip):
     today = str(date.today())
@@ -37,16 +39,24 @@ def download_video():
     if not check_limit(ip):
         return jsonify({"status": "error", "message": "وصلت للحد اليومي، ارجع بكره"}), 429
     try:
-        opts = {
-            "quiet": True,
-            "skip_download": True,
-            "noplaylist": True,
+        headers = {
+            "x-rapidapi-key": API_KEY,
+            "x-rapidapi-host": API_HOST
         }
-        with yt_dlp.YoutubeDL(opts) as ydl:
-            info = ydl.extract_info(url, download=False)
-        video_url = info.get("url", "")
-        thumbnail = info.get("thumbnail", "")
-        title = info.get("title", "فيديو تيك توك")
+        with httpx.Client(timeout=15) as client:
+            response = client.get(
+                f"https://{API_HOST}/index",
+                params={"url": url},
+                headers=headers
+            )
+            result = response.json()
+        video_list = result.get("video", [])
+        cover_list = result.get("cover", [])
+        video_url = video_list[0] if video_list else ""
+        thumbnail = cover_list[0] if cover_list else ""
+        title = result.get("author", ["فيديو تيك توك"])[0]
+        if not video_url:
+            return jsonify({"status": "error", "message": "لم يتم العثور على رابط التحميل"}), 500
         return jsonify({
             "status": "success",
             "title": title,
@@ -56,26 +66,6 @@ def download_video():
         })
     except Exception as e:
         return jsonify({"status": "error", "message": f"خطأ: {str(e)}"}), 500
-
-@app.route('/proxy')
-def proxy_video():
-    url = request.args.get('url', '')
-    if not url:
-        return "No URL", 400
-    try:
-        tmp = tempfile.NamedTemporaryFile(delete=False, suffix='.mp4', dir='/tmp')
-        tmp.close()
-        opts = {
-            "quiet": True,
-            "outtmpl": tmp.name,
-            "format": "best",
-            "noplaylist": True,
-        }
-        with yt_dlp.YoutubeDL(opts) as ydl:
-            ydl.download([url])
-        return send_file(tmp.name, as_attachment=True, download_name='video.mp4', mimetype='video/mp4')
-    except Exception as e:
-        return str(e), 500
 
 if __name__ == '__main__':
     app.run(debug=True)

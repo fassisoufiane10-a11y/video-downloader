@@ -7,25 +7,26 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
-body{background:#000;color:#cbd5e1;font-family:Arial,sans-serif;min-height:100vh}
-.ph{background:#080808;border-bottom:1px solid rgba(168,85,247,0.2);padding:14px 28px;display:flex;justify-content:space-between;align-items:center}
+body{background:radial-gradient(ellipse at top,#1a0a2e 0%,#0d0d1a 50%,#050508 100%);color:#cbd5e1;font-family:Arial,sans-serif;min-height:100vh}
+.ph{background:rgba(10,5,20,0.95);border-bottom:1px solid rgba(168,85,247,0.25);padding:14px 28px;display:flex;justify-content:space-between;align-items:center;position:sticky;top:0;z-index:100;backdrop-filter:blur(10px)}
 .plogo{display:flex;align-items:center;gap:10px}
 .plogo-badge{background:linear-gradient(135deg,#7c3aed,#ec4899);border-radius:10px;width:36px;height:36px;display:flex;align-items:center;justify-content:center}
 .plogo-name{font-size:15px;font-weight:800;letter-spacing:2px;background:linear-gradient(135deg,#a855f7,#ec4899);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
 .pnav{display:flex;gap:24px;font-size:12px}
 .pnav a{color:#64748b;text-decoration:none}
+.pnav a:hover{color:#fff}
 .pad{background:rgba(168,85,247,0.03);border-bottom:1px solid rgba(168,85,247,0.1);padding:10px 28px}
 .pad-slot{max-width:728px;margin:0 auto;height:52px;border:1px dashed rgba(168,85,247,0.15);border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:10px;color:#2d2d3a}
 .phero{padding:48px 28px 24px;text-align:center}
-.phero-tag{display:inline-block;background:rgba(168,85,247,0.1);color:#c084fc;font-size:10px;padding:4px 16px;border-radius:999px;margin-bottom:18px;letter-spacing:1.5px;font-weight:700;border:1px solid rgba(168,85,247,0.2)}
-.phero h1{font-size:36px;font-weight:900;color:#fff;line-height:1.15;margin-bottom:12px}
+.phero-tag{display:inline-block;background:rgba(168,85,247,0.1);color:#c084fc;font-size:10px;padding:4px 16px;border-radius:999px;margin-bottom:18px;letter-spacing:1.5px;font-weight:700;border:1px solid rgba(168,85,247,0.25)}
+.phero h1{font-size:38px;font-weight:900;color:#fff;line-height:1.15;margin-bottom:12px}
 .phero h1 em{font-style:normal;background:linear-gradient(135deg,#a855f7,#ec4899);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
 .phero p{font-size:13px;color:#475569;max-width:420px;margin:0 auto;line-height:1.7}
 .ptabs{display:flex;gap:6px;justify-content:center;margin:22px 0 0;flex-wrap:wrap}
-.ptab{display:flex;align-items:center;gap:6px;padding:8px 18px;border-radius:8px;border:1px solid rgba(168,85,247,0.12);font-size:11px;color:#475569;cursor:pointer;background:#0a0a0a}
-.ptab.active{background:rgba(168,85,247,0.1);border-color:rgba(168,85,247,0.35);color:#c084fc;font-weight:600}
+.ptab{display:flex;align-items:center;gap:6px;padding:8px 18px;border-radius:8px;border:1px solid rgba(168,85,247,0.12);font-size:11px;color:#475569;cursor:pointer;background:rgba(10,5,20,0.5);transition:all 0.2s}
+.ptab.active{background:rgba(168,85,247,0.12);border-color:rgba(168,85,247,0.4);color:#c084fc;font-weight:600}
 .pmain{padding:24px 28px}
-.pbox{background:#080808;border:1px solid rgba(168,85,247,0.18);border-radius:16px;padding:26px;max-width:600px;margin:0 auto 24px}
+.pbox{background:rgba(10,5,20,0.8);border:1px solid rgba(168,85,247,0.2);border-radius:16px;padding:26px;max-width:600px;margin:0 auto 24px;backdrop-filter:blur(10px)}
 .plimit{display:flex;justify-content:space-between;align-items:center;margin-bottom:18px}
 .plimit-text{font-size:11px;color:#334155}
 .plimit-pills{display:flex;gap:4px}
@@ -33,12 +34,13 @@ body{background:#000;color:#cbd5e1;font-family:Arial,sans-serif;min-height:100vh
 .plimit-pill.empty{background:#1a1a2e}
 .pinput-row{display:flex;gap:10px}
 .pinput-wrap{flex:1;position:relative}
-.pinput-wrap input{width:100%;padding:14px 16px 14px 44px;background:#000;border:1px solid rgba(168,85,247,0.18);border-radius:10px;color:#e2e8f0;font-size:13px;outline:none}
+.pinput-wrap input{width:100%;padding:14px 16px 14px 44px;background:rgba(0,0,0,0.5);border:1px solid rgba(168,85,247,0.2);border-radius:10px;color:#e2e8f0;font-size:13px;outline:none;transition:border 0.2s}
 .pinput-wrap input:focus{border-color:#a855f7}
 .pinput-wrap input::placeholder{color:#2d2d3a}
 .pinput-wrap i{position:absolute;left:15px;top:50%;transform:translateY(-50%);color:#7c3aed;font-size:17px}
-.pbtn{padding:14px 24px;background:linear-gradient(135deg,#7c3aed,#ec4899);border:none;border-radius:10px;color:#fff;font-size:13px;font-weight:800;cursor:pointer;white-space:nowrap}
-.presult{margin-top:18px;background:#000;border:1px solid rgba(168,85,247,0.12);border-radius:12px;padding:16px;display:none}
+.pbtn{padding:14px 24px;background:linear-gradient(135deg,#7c3aed,#ec4899);border:none;border-radius:10px;color:#fff;font-size:13px;font-weight:800;cursor:pointer;white-space:nowrap;transition:opacity 0.2s}
+.pbtn:hover{opacity:0.9}
+.presult{margin-top:18px;background:rgba(0,0,0,0.4);border:1px solid rgba(168,85,247,0.15);border-radius:12px;padding:16px;display:none}
 .presult-top{display:flex;gap:14px;align-items:flex-start;margin-bottom:12px}
 .pthumb{width:112px;height:72px;background:rgba(168,85,247,0.06);border-radius:8px;flex-shrink:0;overflow:hidden;border:1px solid rgba(168,85,247,0.15)}
 .pthumb img{width:100%;height:100%;object-fit:cover}
@@ -49,27 +51,41 @@ body{background:#000;color:#cbd5e1;font-family:Arial,sans-serif;min-height:100vh
 .pbadge-green{background:rgba(16,185,129,0.12);color:#10b981;border:1px solid rgba(16,185,129,0.2)}
 .pbadge-purple{background:rgba(168,85,247,0.1);color:#c084fc;border:1px solid rgba(168,85,247,0.2)}
 .pbadge-blue{background:rgba(59,130,246,0.1);color:#60a5fa;border:1px solid rgba(59,130,246,0.2)}
-.presult-hint{font-size:10px;color:#334155;padding:8px 12px;background:rgba(168,85,247,0.05);border-radius:6px;border:1px solid rgba(168,85,247,0.08)}
+.presult-hint{font-size:10px;color:#334155;padding:8px 12px;background:rgba(168,85,247,0.05);border-radius:6px;border:1px solid rgba(168,85,247,0.1)}
 .presult-hint span{color:#c084fc}
 .pdl-row{display:flex;gap:8px;margin-top:12px}
-.pdl-btn{flex:1;display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:10px;background:linear-gradient(135deg,#059669,#10b981);border-radius:8px;color:#fff;font-size:11px;font-weight:800;border:none;cursor:pointer;text-transform:uppercase;letter-spacing:0.5px;text-decoration:none}
-.pdl-btn2{padding:10px 16px;background:rgba(168,85,247,0.1);border-radius:8px;color:#c084fc;font-size:11px;font-weight:700;border:1px solid rgba(168,85,247,0.2);cursor:pointer}
+.pdl-btn{flex:1;display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:11px;background:linear-gradient(135deg,#059669,#10b981);border-radius:8px;color:#fff;font-size:11px;font-weight:800;border:none;cursor:pointer;text-transform:uppercase;letter-spacing:0.5px;text-decoration:none}
+.pdl-btn2{padding:11px 16px;background:rgba(168,85,247,0.1);border-radius:8px;color:#c084fc;font-size:11px;font-weight:700;border:1px solid rgba(168,85,247,0.2);cursor:pointer}
 .perror{margin-top:14px;padding:10px 16px;background:rgba(239,68,68,0.08);border:1px solid rgba(239,68,68,0.2);border-radius:8px;color:#f87171;font-size:12px;display:none;text-align:center}
 .ploading{margin-top:14px;text-align:center;display:none;color:#a855f7;font-size:13px}
 .pstats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;max-width:600px;margin:0 auto 24px}
-.pstat{background:#080808;border:1px solid rgba(168,85,247,0.12);border-radius:10px;padding:16px;text-align:center}
+.pstat{background:rgba(10,5,20,0.7);border:1px solid rgba(168,85,247,0.12);border-radius:10px;padding:16px;text-align:center}
 .pstat-num{font-size:22px;font-weight:900;background:linear-gradient(135deg,#a855f7,#ec4899);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:4px}
 .pstat-label{font-size:10px;color:#334155}
+.ppricing{max-width:600px;margin:0 auto 24px}
+.ppricing h2{text-align:center;font-size:18px;font-weight:800;color:#fff;margin-bottom:16px}
+.ppricing-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.pplan{background:rgba(10,5,20,0.7);border:1px solid rgba(168,85,247,0.15);border-radius:12px;padding:16px;text-align:center;position:relative}
+.pplan.popular{border-color:rgba(168,85,247,0.5);background:rgba(168,85,247,0.08)}
+.ppop-badge{position:absolute;top:-10px;left:50%;transform:translateX(-50%);background:linear-gradient(135deg,#7c3aed,#ec4899);color:#fff;font-size:9px;font-weight:700;padding:3px 12px;border-radius:999px;white-space:nowrap}
+.pplan-name{font-size:13px;font-weight:800;color:#fff;margin-bottom:8px}
+.pplan-price{font-size:24px;font-weight:900;background:linear-gradient(135deg,#a855f7,#ec4899);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:4px}
+.pplan-period{font-size:10px;color:#475569;margin-bottom:12px}
+.pplan-features{list-style:none;margin-bottom:14px;display:flex;flex-direction:column;gap:6px}
+.pplan-features li{font-size:10px;color:#64748b;display:flex;align-items:center;gap:4px;justify-content:center}
+.pplan-features li i{color:#10b981;font-size:10px}
+.pplan-btn{width:100%;padding:8px;background:rgba(168,85,247,0.15);border:1px solid rgba(168,85,247,0.3);border-radius:6px;color:#c084fc;font-size:11px;font-weight:700;cursor:pointer}
+.pplan.popular .pplan-btn{background:linear-gradient(135deg,#7c3aed,#ec4899);border:none;color:#fff}
 .pfeatures{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;max-width:600px;margin:0 auto 24px}
-.pfeat{background:#080808;border:1px solid rgba(168,85,247,0.1);border-radius:10px;padding:16px}
+.pfeat{background:rgba(10,5,20,0.7);border:1px solid rgba(168,85,247,0.1);border-radius:10px;padding:16px}
 .pfeat-icon{width:32px;height:32px;border-radius:8px;display:flex;align-items:center;justify-content:center;margin-bottom:10px}
 .pfeat h4{font-size:11px;font-weight:700;color:#e2e8f0;margin-bottom:4px}
 .pfeat p{font-size:10px;color:#334155;line-height:1.6}
-.pfooter{background:#080808;border-top:1px solid rgba(168,85,247,0.1);padding:16px 28px;display:flex;justify-content:space-between;align-items:center;font-size:11px;color:#1e293b}
+.pfooter{background:rgba(10,5,20,0.95);border-top:1px solid rgba(168,85,247,0.1);padding:16px 28px;display:flex;justify-content:space-between;align-items:center;font-size:11px;color:#1e293b}
 .pfooter a{color:#7c3aed;text-decoration:none;margin-left:16px}
 .page{display:none}
 .page.active{display:block}
-@media(max-width:500px){.pinput-row{flex-direction:column}.pstats,.pfeatures{grid-template-columns:1fr}.ph{flex-direction:column;gap:10px}}
+@media(max-width:500px){.pinput-row{flex-direction:column}.pstats,.pfeatures,.ppricing-grid{grid-template-columns:1fr}.ph{flex-direction:column;gap:10px}}
 </style>
 </head>
 <body>
@@ -87,7 +103,7 @@ body{background:#000;color:#cbd5e1;font-family:Arial,sans-serif;min-height:100vh
 </div>
 
 <div class="pad">
-  <div class="pad-slot">Advertisement — Google AdSense 728×90</div>
+  <div class="pad-slot"><i class="fa-solid fa-rectangle-ad" style="margin-right:6px"></i> Google AdSense 728×90</div>
 </div>
 
 <!-- Home -->
@@ -97,10 +113,10 @@ body{background:#000;color:#cbd5e1;font-family:Arial,sans-serif;min-height:100vh
   <h1>Download Videos<br><em>In Seconds</em></h1>
   <p>TikTok, Instagram, YouTube, Facebook — original quality, no watermark, completely free.</p>
   <div class="ptabs">
-    <div class="ptab active" onclick="setTab(this,'tiktok')"><i class="fa-brands fa-tiktok"></i> TikTok</div>
-    <div class="ptab" onclick="setTab(this,'instagram')"><i class="fa-brands fa-instagram"></i> Instagram</div>
-    <div class="ptab" onclick="setTab(this,'youtube')"><i class="fa-brands fa-youtube"></i> YouTube</div>
-    <div class="ptab" onclick="setTab(this,'facebook')"><i class="fa-brands fa-facebook"></i> Facebook</div>
+    <div class="ptab active" onclick="setTab(this)"><i class="fa-brands fa-tiktok"></i> TikTok</div>
+    <div class="ptab" onclick="setTab(this)"><i class="fa-brands fa-instagram"></i> Instagram</div>
+    <div class="ptab" onclick="setTab(this)"><i class="fa-brands fa-youtube"></i> YouTube</div>
+    <div class="ptab" onclick="setTab(this)"><i class="fa-brands fa-facebook"></i> Facebook</div>
   </div>
 </div>
 
@@ -132,7 +148,7 @@ body{background:#000;color:#cbd5e1;font-family:Arial,sans-serif;min-height:100vh
           <div class="presult-title" id="title"></div>
           <div class="presult-badges">
             <span class="pbadge pbadge-green"><i class="fa-solid fa-check"></i> No Watermark</span>
-            <span class="pbadge pbadge-purple"><i class="fa-solid fa-sparkles"></i> HD Quality</span>
+            <span class="pbadge pbadge-purple"><i class="fa-solid fa-star"></i> HD Quality</span>
             <span class="pbadge pbadge-blue"><i class="fa-solid fa-mobile"></i> MP4</span>
           </div>
         </div>
@@ -151,7 +167,50 @@ body{background:#000;color:#cbd5e1;font-family:Arial,sans-serif;min-height:100vh
     <div class="pstat"><div class="pstat-num">100%</div><div class="pstat-label">Free forever</div></div>
   </div>
 
-  <div class="pad" style="margin-bottom:24px"><div class="pad-slot">Advertisement — Google AdSense In-Content</div></div>
+  <div class="pad" style="margin-bottom:24px"><div class="pad-slot"><i class="fa-solid fa-rectangle-ad" style="margin-right:6px"></i> Google AdSense In-Content</div></div>
+
+  <!-- Pricing -->
+  <div class="ppricing">
+    <h2>Choose Your Plan</h2>
+    <div class="ppricing-grid">
+      <div class="pplan">
+        <div class="pplan-name">Free</div>
+        <div class="pplan-price">$0</div>
+        <div class="pplan-period">forever</div>
+        <ul class="pplan-features">
+          <li><i class="fa-solid fa-check"></i> 5 downloads/day</li>
+          <li><i class="fa-solid fa-check"></i> TikTok & Instagram</li>
+          <li><i class="fa-solid fa-check"></i> HD Quality</li>
+        </ul>
+        <button class="pplan-btn">Current Plan</button>
+      </div>
+      <div class="pplan popular">
+        <div class="ppop-badge">⭐ MOST POPULAR</div>
+        <div class="pplan-name">Basic</div>
+        <div class="pplan-price">$1.99</div>
+        <div class="pplan-period">per month</div>
+        <ul class="pplan-features">
+          <li><i class="fa-solid fa-check"></i> 50 downloads/day</li>
+          <li><i class="fa-solid fa-check"></i> All platforms</li>
+          <li><i class="fa-solid fa-check"></i> No ads</li>
+          <li><i class="fa-solid fa-check"></i> HD Quality</li>
+        </ul>
+        <button class="pplan-btn">Get Basic</button>
+      </div>
+      <div class="pplan">
+        <div class="pplan-name">Pro</div>
+        <div class="pplan-price">$4.99</div>
+        <div class="pplan-period">per month</div>
+        <ul class="pplan-features">
+          <li><i class="fa-solid fa-check"></i> Unlimited downloads</li>
+          <li><i class="fa-solid fa-check"></i> All platforms</li>
+          <li><i class="fa-solid fa-check"></i> No ads</li>
+          <li><i class="fa-solid fa-check"></i> Priority support</li>
+        </ul>
+        <button class="pplan-btn">Get Pro</button>
+      </div>
+    </div>
+  </div>
 
   <div class="pfeatures">
     <div class="pfeat">
@@ -180,7 +239,7 @@ body{background:#000;color:#cbd5e1;font-family:Arial,sans-serif;min-height:100vh
     <div style="font-size:13px;color:#475569;line-height:1.8;display:flex;flex-direction:column;gap:14px">
       <p>By using Pro Downloader, you agree to use this service only for personal, non-commercial purposes.</p>
       <p>You may only download videos that you have the right to download. Downloading copyrighted content without permission is strictly prohibited.</p>
-      <p>We are not responsible for any misuse of downloaded content. The user is solely responsible for how they use the downloaded files.</p>
+      <p>We are not responsible for any misuse of downloaded content.</p>
       <p>We reserve the right to limit or block access to our service at any time without notice.</p>
     </div>
   </div>
@@ -193,8 +252,8 @@ body{background:#000;color:#cbd5e1;font-family:Arial,sans-serif;min-height:100vh
     <div style="font-size:13px;color:#475569;line-height:1.8;display:flex;flex-direction:column;gap:14px">
       <p>Pro Downloader does not store any personal information about our users.</p>
       <p>We do not store the URLs you submit. All processing happens in real-time.</p>
-      <p>We may use cookies to track daily download limits. These cookies do not contain personal information.</p>
-      <p>We may display third-party advertisements. These advertisers may use cookies according to their own privacy policies.</p>
+      <p>We may use cookies to track daily download limits only.</p>
+      <p>We may display third-party advertisements with their own privacy policies.</p>
     </div>
   </div>
 </div>
@@ -205,73 +264,61 @@ body{background:#000;color:#cbd5e1;font-family:Arial,sans-serif;min-height:100vh
 </div>
 
 <script>
-let dailyCount = parseInt(localStorage.getItem('pdCount') || '0');
-let lastDate = localStorage.getItem('pdDate') || '';
+let dailyCount = parseInt(localStorage.getItem('pdCount')||'0');
+let lastDate = localStorage.getItem('pdDate')||'';
 const today = new Date().toDateString();
-if (lastDate !== today) { dailyCount = 0; localStorage.setItem('pdDate', today); }
+if(lastDate!==today){dailyCount=0;localStorage.setItem('pdDate',today);}
 updatePills();
 
-function updatePills() {
-  document.getElementById('remaining').textContent = Math.max(0, 5 - dailyCount);
-  const pills = document.getElementById('pills').children;
-  for (let i = 0; i < 5; i++) {
-    pills[i].className = 'plimit-pill' + (i < (5 - dailyCount) ? '' : ' empty');
-  }
+function updatePills(){
+  document.getElementById('remaining').textContent=Math.max(0,5-dailyCount);
+  const pills=document.getElementById('pills').children;
+  for(let i=0;i<5;i++){pills[i].className='plimit-pill'+(i<(5-dailyCount)?'':' empty');}
 }
 
-function showPage(p) {
-  document.querySelectorAll('.page').forEach(x => x.classList.remove('active'));
-  document.getElementById('page-' + p).classList.add('active');
+function showPage(p){
+  document.querySelectorAll('.page').forEach(x=>x.classList.remove('active'));
+  document.getElementById('page-'+p).classList.add('active');
+  window.scrollTo(0,0);
 }
 
-function setTab(el, platform) {
-  document.querySelectorAll('.ptab').forEach(t => t.classList.remove('active'));
+function setTab(el){
+  document.querySelectorAll('.ptab').forEach(t=>t.classList.remove('active'));
   el.classList.add('active');
 }
 
-async function fetchVideo() {
-  if (dailyCount >= 5) {
-    showError('Daily limit reached. Please come back tomorrow.');
-    return;
-  }
-  const url = document.getElementById('urlInput').value.trim();
-  if (!url) { showError('Please paste a video link first.'); return; }
-
-  document.getElementById('loading').style.display = 'block';
-  document.getElementById('error').style.display = 'none';
-  document.getElementById('result').style.display = 'none';
-
-  try {
-    const res = await fetch('/download', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ url })
-    });
-    const data = await res.json();
-    document.getElementById('loading').style.display = 'none';
-    if (data.status === 'error') { showError(data.message); return; }
-    document.getElementById('thumb').src = data.thumbnail || '';
-    document.getElementById('title').textContent = data.title || '';
-    document.getElementById('dlBtn').href = data.download_url || '#';
-    document.getElementById('result').style.display = 'block';
+async function fetchVideo(){
+  if(dailyCount>=5){showError('Daily limit reached. Upgrade to Pro for unlimited downloads!');return;}
+  const url=document.getElementById('urlInput').value.trim();
+  if(!url){showError('Please paste a video link first.');return;}
+  document.getElementById('loading').style.display='block';
+  document.getElementById('error').style.display='none';
+  document.getElementById('result').style.display='none';
+  try{
+    const res=await fetch('/download',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({url})});
+    const data=await res.json();
+    document.getElementById('loading').style.display='none';
+    if(data.status==='error'){showError(data.message);return;}
+    document.getElementById('thumb').src=data.thumbnail||'';
+    document.getElementById('title').textContent=data.title||'';
+    document.getElementById('dlBtn').href=data.download_url||'#';
+    document.getElementById('result').style.display='block';
     dailyCount++;
-    localStorage.setItem('pdCount', dailyCount);
+    localStorage.setItem('pdCount',dailyCount);
     updatePills();
-  } catch(e) {
-    document.getElementById('loading').style.display = 'none';
+  }catch(e){
+    document.getElementById('loading').style.display='none';
     showError('Something went wrong. Please try again.');
   }
 }
 
-function showError(msg) {
-  const el = document.getElementById('error');
-  el.textContent = msg;
-  el.style.display = 'block';
+function showError(msg){
+  const el=document.getElementById('error');
+  el.textContent=msg;
+  el.style.display='block';
 }
 
-document.getElementById('urlInput').addEventListener('keydown', e => {
-  if (e.key === 'Enter') fetchVideo();
-});
+document.getElementById('urlInput').addEventListener('keydown',e=>{if(e.key==='Enter')fetchVideo();});
 </script>
 </body>
 </html>

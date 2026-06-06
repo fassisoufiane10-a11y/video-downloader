@@ -1,5 +1,5 @@
 import os
-from flask import Flask, request, jsonify, send_file
+from flask import Flask, request, jsonify, send_file, Response
 from collections import defaultdict
 from datetime import date
 import httpx
@@ -49,7 +49,6 @@ def try_api2(url):
         with httpx.Client(timeout=15) as client:
             response = client.get(f"https://{API2_HOST}/download", params={"url": url}, headers=headers)
             result = response.json()
-        print("API2 Response:", result)
         data = result.get("data", {})
         video_url = data.get("url") or result.get("url") or result.get("download_url")
         thumbnail = data.get("thumbnail", "") or result.get("thumbnail", "")
@@ -60,7 +59,7 @@ def try_api2(url):
             return {
                 "status": "success",
                 "title": title,
-                "thumbnail": thumbnail,
+                "thumbnail": f"/thumb?url={thumbnail}" if thumbnail else "",
                 "download_url": video_url
             }
     except Exception as e:
@@ -72,6 +71,18 @@ def home():
     if os.path.exists(HTML_PATH):
         return send_file(HTML_PATH)
     return "Error: index.html is missing.", 404
+
+@app.route('/thumb')
+def proxy_thumb():
+    img_url = request.args.get('url', '')
+    if not img_url:
+        return "No URL", 400
+    try:
+        with httpx.Client(timeout=10) as client:
+            r = client.get(img_url, headers={"User-Agent": "Mozilla/5.0"})
+            return Response(r.content, content_type=r.headers.get('content-type', 'image/jpeg'))
+    except:
+        return "Error", 500
 
 @app.route('/download', methods=['POST'])
 def download_video():

@@ -50,14 +50,17 @@ def try_api2(url):
             response = client.get(f"https://{API2_HOST}/download", params={"url": url}, headers=headers)
             result = response.json()
         print("API2 Response:", result)
-        video_url = result.get("url") or result.get("download_url") or result.get("video")
+        data = result.get("data", {})
+        video_url = data.get("url") or result.get("url") or result.get("download_url")
+        thumbnail = data.get("thumbnail", "") or result.get("thumbnail", "")
+        title = data.get("title", "Video") or result.get("title", "Video")
         if isinstance(video_url, list):
             video_url = video_url[0]
         if video_url:
             return {
                 "status": "success",
-                "title": result.get("title", "Video"),
-                "thumbnail": result.get("thumbnail", ""),
+                "title": title,
+                "thumbnail": thumbnail,
                 "download_url": video_url
             }
     except Exception as e:

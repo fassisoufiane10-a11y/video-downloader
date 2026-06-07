@@ -46,19 +46,17 @@ def check_limit(ip):
 def try_api1(url):
     try:
         headers = {"x-rapidapi-key": API_KEY, "x-rapidapi-host": API1_HOST}
-        encoded_url = quote(url, safe=':/?=&')
-        with httpx.Client(timeout=20) as client:
-            response = client.get(f"https://{API1_HOST}/index", params={"url": encoded_url}, headers=headers)
+        with httpx.Client(timeout=15) as client:
+            response = client.get(f"https://{API1_HOST}/index", params={"url": url}, headers=headers)
         result = response.json()
-        logging.info(f"API1 RESPONSE: {result}")
+        logging.info(f"API1 RESPONSE keys: {list(result.keys())}")
         video_list = result.get("video", [])
         cover_list = result.get("cover", [])
         if video_list:
-            thumbnail = cover_list[0] if cover_list else ""
             return {
                 "status": "success",
                 "title": result.get("author", ["Video"])[0],
-                "thumbnail": f"/thumb?url={quote(thumbnail, safe='')}" if thumbnail else "",
+                "thumbnail": cover_list[0] if cover_list else "",
                 "download_url": video_list[0]
             }
     except Exception as e:
@@ -69,11 +67,10 @@ def try_api2(url):
     try:
         headers = {"x-rapidapi-key": API_KEY, "x-rapidapi-host": API2_HOST}
         encoded_url = quote(url, safe=':/?=&')
-        with httpx.Client(timeout=20, follow_redirects=True) as client:
+        with httpx.Client(timeout=15, follow_redirects=True) as client:
             response = client.get(f"https://{API2_HOST}/download", params={"url": encoded_url}, headers=headers)
         logging.info(f"API2 STATUS: {response.status_code}")
         result = response.json()
-        logging.info(f"API2 RESPONSE: {result}")
         if not result.get("success"):
             return None
         data = result.get("data", {})
@@ -100,7 +97,7 @@ def proxy_thumb():
     if not img_url:
         return "No URL", 400
     try:
-        r = httpx.get(img_url, headers={"User-Agent": "Mozilla/5.0", "Referer": "https://www.instagram.com/"}, timeout=20, follow_redirects=True)
+        r = httpx.get(img_url, headers={"User-Agent": "Mozilla/5.0", "Referer": "https://www.instagram.com/"}, timeout=15, follow_redirects=True)
         return Response(r.content, content_type=r.headers.get("content-type", "image/jpeg"))
     except Exception as e:
         logging.error(f"THUMB ERROR: {str(e)}")
@@ -115,20 +112,17 @@ def admin():
         with open(LOG_FILE, "r", encoding="utf-8") as f:
             logs = f.read()
         total = sum(v["count"] for v in user_downloads.values())
-        html = f"""
-        <html><head><title>Admin</title>
+        html = f"""<html><head><title>Admin</title>
         <style>body{{background:#0a0a18;color:#e2e8f0;font-family:Arial;padding:20px}}
         h1{{color:#a855f7}}pre{{background:#111;padding:15px;border-radius:8px;overflow:auto;font-size:12px;max-height:500px}}
         .stat{{background:#1a1a2e;padding:15px;border-radius:8px;margin-bottom:10px;display:inline-block;margin-right:10px}}
         .stat-num{{font-size:24px;font-weight:bold;color:#a855f7}}</style></head>
-        <body>
-        <h1>Admin Panel — Pro Downloader</h1>
+        <body><h1>Admin Panel — Pro Downloader</h1>
         <div class="stat"><div class="stat-num">{len(user_downloads)}</div>Users Today</div>
         <div class="stat"><div class="stat-num">{total}</div>Downloads Today</div>
         <h2 style="margin-top:20px;color:#c084fc">Latest Logs</h2>
         <pre>{logs[-3000:] if len(logs) > 3000 else logs}</pre>
-        </body></html>
-        """
+        </body></html>"""
         return html
     except:
         return "No logs yet", 200

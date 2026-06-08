@@ -1,16 +1,16 @@
 import os
 import logging
 import sys
-import json
 from urllib.parse import quote
 from concurrent.futures import ThreadPoolExecutor, as_completed
-from datetime import date
+from datetime import date, datetime
 
 sys.stdout.reconfigure(encoding='utf-8')
 sys.stderr.reconfigure(encoding='utf-8')
 
 from flask import Flask, request, jsonify, send_file, Response
 import httpx
+import redis
 
 app = Flask(__name__)
 
@@ -24,32 +24,53 @@ formatter = logging.Formatter("%(asctime)s | %(levelname)s | %(message)s")
 console_handler = logging.StreamHandler(sys.stdout)
 console_handler.setFormatter(formatter)
 logger.addHandler(console_handler)
-
 logger.info("SERVER STARTED")
 
 DAILY_LIMIT = 5
-API_KEY = os.environ.get("8ae11fb2dcmshc861331abad3af0p15ae2cjsn7676c624702f")
+API_KEY = os.environ.get("API_KEY")
 API1_HOST = "tiktok-downloader-download-tiktok-videos-without-watermark.p.rapidapi.com"
 API2_HOST = "social-video-downloader3.p.rapidapi.com"
-ADMIN_PASSWORD = os.environ.get("Fs7#Kp92@Lx")
+ADMIN_PASSWORD = os.environ.get("ADMIN_PASSWORD", "admin2026")
 
-# الـ limit في memory
-limits_data = {}
+# Redis connection
+try:
+    rdb = redis.from_url(
+        os.environ.get("UPSTASH_REDIS_URL", ""),
+        password=os.environ.get("UPSTASH_REDIS_TOKEN", ""),
+        decode_responses=True
+    )
+    rdb.ping()
+    logger.info("REDIS CONNECTED")
+except Exception as e:
+    logger.error(f"REDIS ERROR: {str(e)}")
+    rdb = None
 
 def check_limit(ip):
     today = str(date.today())
-    if ip not in limits_data or limits_data[ip]["date"] != today:
-        limits_data[ip] = {"count": 0, "date": today}
-    if limits_data[ip]["count"] >= DAILY_LIMIT:
-        return False
-    limits_data[ip]["count"] += 1
+    key = f"limit:{ip}:{today}"
+    try:
+        if rdb:
+            count = rdb.get(key)
+            count = int(count) if count else 0
+            if count >= DAILY_LIMIT:
+                return False
+            rdb.incr(key)
+            rdb.expire(key, 86400)
+            return True
+    except Exception as e:
+        logger.error(f"REDIS LIMIT ERROR: {str(e)}")
     return True
 
 def get_remaining(ip):
     today = str(date.today())
-    if ip not in limits_data or limits_data[ip]["date"] != today:
-        return DAILY_LIMIT
-    return max(0, DAILY_LIMIT - limits_data[ip]["count"])
+    key = f"limit:{ip}:{today}"
+    try:
+        if rdb:
+            count = rdb.get(key)
+            return max(0, DAILY_LIMIT - int(count)) if count else DAILY_LIMIT
+    except:
+        pass
+    return DAILY_LIMIT
 
 def try_api1(url):
     try:
@@ -64,6 +85,7 @@ def try_api1(url):
             return {
                 "status": "success",
                 "title": result.get("author", ["Video"])[0],
+                "description": result.get("description", [""])[0] if result.get("description") else "",
                 "thumbnail": cover_list[0] if cover_list else "",
                 "download_url": video_list[0]
             }
@@ -86,6 +108,7 @@ def try_api2(url):
         return {
             "status": "success",
             "title": data.get("title", "Video"),
+            "description": data.get("description", ""),
             "thumbnail": f"/thumb?url={quote(thumbnail, safe='')}" if thumbnail else "",
             "download_url": data.get("url", "")
         }
@@ -118,32 +141,39 @@ def admin():
         return "Access Denied", 403
 
     today = str(date.today())
-    today_users = {ip: d for ip, d in limits_data.items() if d.get("date") == today}
-    total_today = sum(d["count"] for d in today_users.values())
+    total_today = 0
+    total_users = 0
+
+    try:
+        if rdb:
+            keys = rdb.keys(f"limit:*:{today}")
+            total_users = len(keys)
+            for k in keys:
+                val = rdb.get(k)
+                if val:
+                    total_today += int(val)
+    except:
+        pass
 
     html = f"""<html><head><title>Admin — Pro Downloader</title>
     <meta charset="UTF-8">
     <style>
     body{{background:#0a0a18;color:#e2e8f0;font-family:Arial;padding:20px}}
     h1{{color:#a855f7;margin-bottom:20px}}
-    h2{{color:#c084fc;margin:20px 0 10px;font-size:15px}}
     .stats{{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:20px}}
     .stat{{background:#1a1a2e;padding:16px 24px;border-radius:10px;border:1px solid rgba(168,85,247,0.2)}}
     .stat-num{{font-size:28px;font-weight:900;color:#a855f7}}
     .stat-label{{font-size:11px;color:#475569;margin-top:4px}}
-    .top-users{{background:#0d0d1a;border-radius:10px;padding:16px;border:1px solid rgba(168,85,247,0.15)}}
-    .user-row{{display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px solid rgba(168,85,247,0.08);font-size:12px}}
+    .redis-status{{padding:8px 16px;border-radius:6px;font-size:12px;margin-bottom:16px;display:inline-block}}
     </style></head>
     <body>
     <h1>🔐 Admin Panel — Pro Downloader</h1>
-    <div class="stats">
-        <div class="stat"><div class="stat-num">{len(today_users)}</div><div class="stat-label">Users Today</div></div>
-        <div class="stat"><div class="stat-num">{total_today}</div><div class="stat-label">Downloads Today</div></div>
-        <div class="stat"><div class="stat-num">{len(limits_data)}</div><div class="stat-label">Total Users</div></div>
+    <div class="redis-status" style="background:{'rgba(16,185,129,0.1);color:#10b981;border:1px solid rgba(16,185,129,0.2)' if rdb else 'rgba(239,68,68,0.1);color:#f87171;border:1px solid rgba(239,68,68,0.2)'}">
+        Redis: {'✅ Connected' if rdb else '❌ Not Connected'}
     </div>
-    <h2>Top Users Today</h2>
-    <div class="top-users">
-    {"".join([f'<div class="user-row"><span style="color:#94a3b8">{ip}</span><span style="color:#a855f7;font-weight:700">{d["count"]} downloads</span></div>' for ip, d in sorted(today_users.items(), key=lambda x: x[1]["count"], reverse=True)[:10]]) or "<p style='color:#475569;font-size:12px'>No data yet</p>"}
+    <div class="stats">
+        <div class="stat"><div class="stat-num">{total_users}</div><div class="stat-label">Users Today</div></div>
+        <div class="stat"><div class="stat-num">{total_today}</div><div class="stat-label">Downloads Today</div></div>
     </div>
     </body></html>"""
     return html

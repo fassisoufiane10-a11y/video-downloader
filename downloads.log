@@ -74,3 +74,5 @@
 2026-06-07 01:16:51,760 | INFO | API2 STATUS: 400
 2026-06-07 01:16:51,764 | INFO | FINAL RESULT = {'status': 'success', 'title': 'paoladelamatta', 'thumbnail': 'https://p16-common-sign.tiktokcdn-us.com/tos-useast8-p-0068-tx2/o0BVg0WU2zUZ6XMLQLMAgYFtGeoAfFARffQy8z~tplv-tiktokx-cropcenter-q:300:400:q70.jpeg?dr=8596&refresh_token=c9746c69&x-expires=1780880400&x-signature=T%2B%2BWaYbB1Gnzdr5dpVhlAkmk2h4%3D&t=bacd0480&ps=933b5bde&shp=d05b14bd&shcp=1d1a97fc&idc=useast5&biz_tag=tt_video&s=AWEME_DETAIL&sc=cover', 'download_url': 'https://v19.tiktokcdn-us.com/e80b0a0c955399130329a07852a2af68/6a251afe/video/tos/useast8/tos-useast8-pve-0068-tx2/o0II5fKCQfWRU0FFrLHGeQ6GYZALg0fAKN4oIZ/?a=1233&bti=OTg7QGo5QHM6OjZALTAzYCMvcCMxNDNg&&bt=1561&ft=BIcq8VY1wyqRft9EOr_hFJ4_A0piiHNzQjKJZrdYAG0P3-I&mime_type=video_mp4&rc=Z2doOGQ0OGgzOzs1NjdpM0Bpam9sdW85cjZ5OzMzaTczNEBiMV5iMC1hXzMxLi8yMGM2YSNyXjRrMmQ0ai9hLS1kMTJzcw%3D%3D&vvpl=1&l=20260607011650642B537D03ECB855BF10&btag=e000b8000'}
 2026-06-07 01:40:45,001 | INFO | SERVER STARTED
+2026-06-08 09:29:00,560 | INFO | SERVER STARTED
+2026-06-08 09:42:20,032 | INFO | SERVER STARTED

@@ -42,10 +42,10 @@ except:
 logger.info("SERVER STARTED")
 
 DAILY_LIMIT = 5
-API_KEY = "88e4bd1c94msh209df9927beaafcp10fbdejsn05050b2447fb"
+API_KEY = "8ae11fb2dcmshc861331abad3af0p15ae2cjsn7676c624702f"
 API1_HOST = "tiktok-downloader-download-tiktok-videos-without-watermark.p.rapidapi.com"
 API2_HOST = "social-video-downloader3.p.rapidapi.com"
-ADMIN_PASSWORD = "admin2026"
+ADMIN_PASSWORD = "Fs7#Kp92@Lx"
 
 # تحميل الـ limits من الملف
 def load_limits():

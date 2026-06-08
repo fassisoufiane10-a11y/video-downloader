@@ -16,7 +16,7 @@ app = Flask(__name__)
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 HTML_PATH = os.path.join(BASE_DIR, "index.html")
-DB_FILE = os.path.join(BASE_DIR, "prodown.db")
+DB_FILE = "/data/prodown.db"
 
 # Logging
 logger = logging.getLogger("prodown")

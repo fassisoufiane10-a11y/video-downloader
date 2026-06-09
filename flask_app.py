@@ -33,13 +33,14 @@ API2_HOST = "social-video-downloader3.p.rapidapi.com"
 ADMIN_PASSWORD = os.environ.get("ADMIN_PASSWORD", "admin2026")
 
 # Redis connection
+# Redis connection
 try:
     redis_url = os.environ.get("UPSTASH_REDIS_URL", "")
-redis_token = os.environ.get("UPSTASH_REDIS_TOKEN", "")
-if redis_token and "://" in redis_url:
-    parts = redis_url.split("://")
-    redis_url = f"{parts[0]}://:{redis_token}@{parts[1]}"
-rdb = redis.from_url(redis_url, decode_responses=True)
+    redis_token = os.environ.get("UPSTASH_REDIS_TOKEN", "")
+    if redis_token and "://" in redis_url:
+        parts = redis_url.split("://")
+        redis_url = f"{parts[0]}://:{redis_token}@{parts[1]}"
+    rdb = redis.from_url(redis_url, decode_responses=True)
     rdb.ping()
     logger.info("REDIS CONNECTED")
 except Exception as e:

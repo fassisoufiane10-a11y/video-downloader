@@ -3,5 +3,3 @@ flask
 httpx
 
 gunicorn
-
-redis

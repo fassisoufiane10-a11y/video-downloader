@@ -3,21 +3,19 @@ import logging
 import sys
 from urllib.parse import quote
 from concurrent.futures import ThreadPoolExecutor, as_completed
-from datetime import date, datetime
+from datetime import date
 
 sys.stdout.reconfigure(encoding='utf-8')
 sys.stderr.reconfigure(encoding='utf-8')
 
 from flask import Flask, request, jsonify, send_file, Response
 import httpx
-import redis
 
 app = Flask(__name__)
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 HTML_PATH = os.path.join(BASE_DIR, "index.html")
 
-# Logging
 logger = logging.getLogger("prodown")
 logger.setLevel(logging.INFO)
 formatter = logging.Formatter("%(asctime)s | %(levelname)s | %(message)s")
@@ -32,47 +30,58 @@ API1_HOST = "tiktok-downloader-download-tiktok-videos-without-watermark.p.rapida
 API2_HOST = "social-video-downloader3.p.rapidapi.com"
 ADMIN_PASSWORD = os.environ.get("ADMIN_PASSWORD", "admin2026")
 
-# Redis connection
-# Redis connection
-try:
-    redis_url = os.environ.get("UPSTASH_REDIS_URL", "")
-    redis_token = os.environ.get("UPSTASH_REDIS_TOKEN", "")
-    if redis_token and "://" in redis_url:
-        parts = redis_url.split("://")
-        redis_url = f"{parts[0]}://:{redis_token}@{parts[1]}"
-    rdb = redis.from_url(redis_url, decode_responses=True)
-    rdb.ping()
-    logger.info("REDIS CONNECTED")
-except Exception as e:
-    logger.error(f"REDIS ERROR: {str(e)}")
-    rdb = None
+UPSTASH_URL = os.environ.get("UPSTASH_REDIS_URL", "")
+UPSTASH_TOKEN = os.environ.get("UPSTASH_REDIS_TOKEN", "")
+
+def redis_get(key):
+    try:
+        r = httpx.get(f"{UPSTASH_URL}/get/{key}", headers={"Authorization": f"Bearer {UPSTASH_TOKEN}"}, timeout=5)
+        return r.json().get("result")
+    except:
+        return None
+
+def redis_incr(key):
+    try:
+        httpx.get(f"{UPSTASH_URL}/incr/{key}", headers={"Authorization": f"Bearer {UPSTASH_TOKEN}"}, timeout=5)
+    except:
+        pass
+
+def redis_expire(key, seconds):
+    try:
+        httpx.get(f"{UPSTASH_URL}/expire/{key}/{seconds}", headers={"Authorization": f"Bearer {UPSTASH_TOKEN}"}, timeout=5)
+    except:
+        pass
+
+def redis_keys(pattern):
+    try:
+        r = httpx.get(f"{UPSTASH_URL}/keys/{pattern}", headers={"Authorization": f"Bearer {UPSTASH_TOKEN}"}, timeout=5)
+        return r.json().get("result", [])
+    except:
+        return []
 
 def check_limit(ip):
     today = str(date.today())
     key = f"limit:{ip}:{today}"
     try:
-        if rdb:
-            count = rdb.get(key)
-            count = int(count) if count else 0
-            if count >= DAILY_LIMIT:
-                return False
-            rdb.incr(key)
-            rdb.expire(key, 86400)
-            return True
+        count = redis_get(key)
+        count = int(count) if count else 0
+        if count >= DAILY_LIMIT:
+            return False
+        redis_incr(key)
+        redis_expire(key, 86400)
+        return True
     except Exception as e:
-        logger.error(f"REDIS LIMIT ERROR: {str(e)}")
+        logger.error(f"LIMIT ERROR: {str(e)}")
     return True
 
 def get_remaining(ip):
     today = str(date.today())
     key = f"limit:{ip}:{today}"
     try:
-        if rdb:
-            count = rdb.get(key)
-            return max(0, DAILY_LIMIT - int(count)) if count else DAILY_LIMIT
+        count = redis_get(key)
+        return max(0, DAILY_LIMIT - int(count)) if count else DAILY_LIMIT
     except:
-        pass
-    return DAILY_LIMIT
+        return DAILY_LIMIT
 
 def try_api1(url):
     try:
@@ -144,18 +153,14 @@ def admin():
 
     today = str(date.today())
     total_today = 0
-    total_users = 0
+    keys = redis_keys(f"limit:*:{today}")
+    total_users = len(keys)
+    for k in keys:
+        val = redis_get(k)
+        if val:
+            total_today += int(val)
 
-    try:
-        if rdb:
-            keys = rdb.keys(f"limit:*:{today}")
-            total_users = len(keys)
-            for k in keys:
-                val = rdb.get(k)
-                if val:
-                    total_today += int(val)
-    except:
-        pass
+    redis_ok = UPSTASH_URL != "" and UPSTASH_TOKEN != ""
 
     html = f"""<html><head><title>Admin — Pro Downloader</title>
     <meta charset="UTF-8">
@@ -166,12 +171,12 @@ def admin():
     .stat{{background:#1a1a2e;padding:16px 24px;border-radius:10px;border:1px solid rgba(168,85,247,0.2)}}
     .stat-num{{font-size:28px;font-weight:900;color:#a855f7}}
     .stat-label{{font-size:11px;color:#475569;margin-top:4px}}
-    .redis-status{{padding:8px 16px;border-radius:6px;font-size:12px;margin-bottom:16px;display:inline-block}}
+    .badge{{padding:8px 16px;border-radius:6px;font-size:12px;margin-bottom:16px;display:inline-block}}
     </style></head>
     <body>
     <h1>🔐 Admin Panel — Pro Downloader</h1>
-    <div class="redis-status" style="background:{'rgba(16,185,129,0.1);color:#10b981;border:1px solid rgba(16,185,129,0.2)' if rdb else 'rgba(239,68,68,0.1);color:#f87171;border:1px solid rgba(239,68,68,0.2)'}">
-        Redis: {'✅ Connected' if rdb else '❌ Not Connected'}
+    <div class="badge" style="background:{'rgba(16,185,129,0.1);color:#10b981;border:1px solid rgba(16,185,129,0.2)' if redis_ok else 'rgba(239,68,68,0.1);color:#f87171;border:1px solid rgba(239,68,68,0.2)'}">
+        Upstash: {'✅ Configured' if redis_ok else '❌ Not Configured'}
     </div>
     <div class="stats">
         <div class="stat"><div class="stat-num">{total_users}</div><div class="stat-label">Users Today</div></div>

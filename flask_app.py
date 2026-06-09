@@ -4,6 +4,7 @@ import sys
 from urllib.parse import quote
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from datetime import date
+import json
 
 sys.stdout.reconfigure(encoding='utf-8')
 sys.stderr.reconfigure(encoding='utf-8')
@@ -16,19 +17,20 @@ app = Flask(__name__)
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 HTML_PATH = os.path.join(BASE_DIR, "index.html")
 
-logger = logging.getLogger("prodown")
+logger = logging.getLogger("lumora")
 logger.setLevel(logging.INFO)
 formatter = logging.Formatter("%(asctime)s | %(levelname)s | %(message)s")
 console_handler = logging.StreamHandler(sys.stdout)
 console_handler.setFormatter(formatter)
 logger.addHandler(console_handler)
-logger.info("SERVER STARTED")
+logger.info("LUMORA SERVER STARTED")
 
 DAILY_LIMIT = 5
 API_KEY = os.environ.get("API_KEY")
 API1_HOST = "tiktok-downloader-download-tiktok-videos-without-watermark.p.rapidapi.com"
 API2_HOST = "social-video-downloader3.p.rapidapi.com"
 ADMIN_PASSWORD = os.environ.get("ADMIN_PASSWORD", "admin2026")
+GEMINI_API_KEY = os.environ.get("GEMINI_API_KEY")
 
 UPSTASH_URL = os.environ.get("UPSTASH_REDIS_URL", "")
 UPSTASH_TOKEN = os.environ.get("UPSTASH_REDIS_TOKEN", "")
@@ -93,11 +95,12 @@ def try_api1(url):
         video_list = result.get("video", [])
         cover_list = result.get("cover", [])
         if video_list:
+            thumbnail = cover_list[0] if cover_list else ""
             return {
                 "status": "success",
                 "title": result.get("author", ["Video"])[0],
                 "description": result.get("description", [""])[0] if result.get("description") else "",
-                "thumbnail": cover_list[0] if cover_list else "",
+                "thumbnail": f"/thumb?url={quote(thumbnail, safe='')}" if thumbnail else "",
                 "download_url": video_list[0]
             }
     except Exception as e:
@@ -127,6 +130,34 @@ def try_api2(url):
         logger.error(f"API2 ERROR: {str(e)}")
     return None
 
+def generate_with_gemini(title, description, platform):
+    try:
+        prompt = f"""You are a social media content expert. Based on this video:
+Title/Author: {title}
+Description: {description}
+Platform: {platform}
+
+Generate the following in JSON format only, no markdown:
+{{
+  "titles": ["title1", "title2", "title3"],
+  "caption": "engaging caption for the video",
+  "hashtags": ["#tag1", "#tag2", "#tag3", "#tag4", "#tag5", "#tag6", "#tag7", "#tag8", "#tag9", "#tag10"],
+  "shorts_idea": "idea for a short/reel version of this content"
+}}"""
+
+        response = httpx.post(
+            f"https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key={GEMINI_API_KEY}",
+            json={"contents": [{"parts": [{"text": prompt}]}]},
+            timeout=30
+        )
+        result = response.json()
+        text = result["candidates"][0]["content"]["parts"][0]["text"]
+        text = text.replace("```json", "").replace("```", "").strip()
+        return json.loads(text)
+    except Exception as e:
+        logger.error(f"GEMINI ERROR: {str(e)}")
+        return None
+
 @app.route("/")
 def home():
     if os.path.exists(HTML_PATH):
@@ -139,7 +170,10 @@ def proxy_thumb():
     if not img_url:
         return "No URL", 400
     try:
-        r = httpx.get(img_url, headers={"User-Agent": "Mozilla/5.0", "Referer": "https://www.instagram.com/"}, timeout=15, follow_redirects=True)
+        r = httpx.get(img_url, headers={
+            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36",
+            "Referer": "https://www.tiktok.com/"
+        }, timeout=15, follow_redirects=True)
         return Response(r.content, content_type=r.headers.get("content-type", "image/jpeg"))
     except Exception as e:
         logger.error(f"THUMB ERROR: {str(e)}")
@@ -149,6 +183,51 @@ def proxy_thumb():
 def remaining():
     ip = request.remote_addr
     return jsonify({"remaining": get_remaining(ip)})
+
+@app.route("/studio", methods=["POST"])
+def studio():
+    data = request.get_json() or {}
+    url = data.get("url", "").strip()
+    if not url:
+        return jsonify({"status": "error", "message": "Please enter a valid link"}), 400
+
+    # جيب معلومات الفيديو الأول
+    video_info = None
+    with ThreadPoolExecutor(max_workers=2) as executor:
+        futures = {
+            executor.submit(try_api1, url): "api1",
+            executor.submit(try_api2, url): "api2"
+        }
+        for future in as_completed(futures):
+            res = future.result()
+            if res and not video_info:
+                video_info = res
+
+    if not video_info:
+        return jsonify({"status": "error", "message": "Could not fetch video. Try another link."}), 500
+
+    # حدد المنصة
+    platform = "TikTok" if "tiktok" in url else "Instagram" if "instagram" in url else "YouTube"
+
+    # استخدم Gemini
+    ai_result = generate_with_gemini(
+        video_info.get("title", ""),
+        video_info.get("description", ""),
+        platform
+    )
+
+    if not ai_result:
+        return jsonify({"status": "error", "message": "AI analysis failed. Please try again."}), 500
+
+    return jsonify({
+        "status": "success",
+        "video_title": video_info.get("title", ""),
+        "thumbnail": video_info.get("thumbnail", ""),
+        "titles": "<br>".join([f"• {t}" for t in ai_result.get("titles", [])]),
+        "caption": ai_result.get("caption", ""),
+        "hashtags": ai_result.get("hashtags", []),
+        "shorts": ai_result.get("shorts_idea", "")
+    })
 
 @app.route("/admin")
 def admin():
@@ -167,7 +246,7 @@ def admin():
 
     redis_ok = UPSTASH_URL != "" and UPSTASH_TOKEN != ""
 
-    html = f"""<html><head><title>Admin — Pro Downloader</title>
+    html = f"""<html><head><title>Admin — LUMORA</title>
     <meta charset="UTF-8">
     <style>
     body{{background:#0a0a18;color:#e2e8f0;font-family:Arial;padding:20px}}
@@ -179,7 +258,7 @@ def admin():
     .badge{{padding:8px 16px;border-radius:6px;font-size:12px;margin-bottom:16px;display:inline-block}}
     </style></head>
     <body>
-    <h1>🔐 Admin Panel — Pro Downloader</h1>
+    <h1>🔐 Admin Panel — LUMORA</h1>
     <div class="badge" style="background:{'rgba(16,185,129,0.1);color:#10b981;border:1px solid rgba(16,185,129,0.2)' if redis_ok else 'rgba(239,68,68,0.1);color:#f87171;border:1px solid rgba(239,68,68,0.2)'}">
         Upstash: {'✅ Configured' if redis_ok else '❌ Not Configured'}
     </div>
@@ -201,7 +280,7 @@ def download_video():
         return jsonify({"status": "error", "message": "Please enter a valid link"}), 400
 
     if not check_limit(ip):
-        return jsonify({"status": "error", "message": "Daily limit reached. Upgrade to Pro!"}), 429
+        return jsonify({"status": "error", "message": "Daily limit reached. Come back tomorrow!"}), 429
 
     with ThreadPoolExecutor(max_workers=2) as executor:
         futures = {

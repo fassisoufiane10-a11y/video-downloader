@@ -100,7 +100,7 @@ def try_api1(url):
                 "status": "success",
                 "title": result.get("author", ["Video"])[0],
                 "description": result.get("description", [""])[0] if result.get("description") else "",
-                "thumbnail": f"/thumb?url={quote(thumbnail, safe='')}" if thumbnail else "",
+                "thumbnail": thumbnail,
                 "download_url": video_list[0]
             }
     except Exception as e:
@@ -111,7 +111,7 @@ def try_api2(url):
     try:
         headers = {"x-rapidapi-key": API_KEY, "x-rapidapi-host": API2_HOST}
         encoded_url = quote(url, safe=':/?=&')
-        with httpx.Client(timeout=15, follow_redirects=True) as client:
+        with httpx.Client(timeout=10, follow_redirects=True) as client:
             response = client.get(f"https://{API2_HOST}/download", params={"url": encoded_url}, headers=headers)
         logger.info(f"API2 STATUS: {response.status_code}")
         result = response.json()
@@ -137,7 +137,7 @@ Title/Author: {title}
 Description: {description}
 Platform: {platform}
 
-Generate the following in JSON format only, no markdown:
+Generate the following in JSON format only, no markdown, no code blocks:
 {{
   "titles": ["title1", "title2", "title3"],
   "caption": "engaging caption for the video",
@@ -146,11 +146,12 @@ Generate the following in JSON format only, no markdown:
 }}"""
 
         response = httpx.post(
-            f"https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key={GEMINI_API_KEY}",
+            f"https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key={GEMINI_API_KEY}",
             json={"contents": [{"parts": [{"text": prompt}]}]},
             timeout=30
         )
         result = response.json()
+        logger.info(f"GEMINI STATUS: {response.status_code}")
         text = result["candidates"][0]["content"]["parts"][0]["text"]
         text = text.replace("```json", "").replace("```", "").strip()
         return json.loads(text)
@@ -172,7 +173,7 @@ def proxy_thumb():
     try:
         r = httpx.get(img_url, headers={
             "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36",
-            "Referer": "https://www.tiktok.com/"
+            "Referer": "https://www.instagram.com/"
         }, timeout=15, follow_redirects=True)
         return Response(r.content, content_type=r.headers.get("content-type", "image/jpeg"))
     except Exception as e:
@@ -191,7 +192,6 @@ def studio():
     if not url:
         return jsonify({"status": "error", "message": "Please enter a valid link"}), 400
 
-    # جيب معلومات الفيديو الأول
     video_info = None
     with ThreadPoolExecutor(max_workers=2) as executor:
         futures = {
@@ -206,10 +206,8 @@ def studio():
     if not video_info:
         return jsonify({"status": "error", "message": "Could not fetch video. Try another link."}), 500
 
-    # حدد المنصة
     platform = "TikTok" if "tiktok" in url else "Instagram" if "instagram" in url else "YouTube"
 
-    # استخدم Gemini
     ai_result = generate_with_gemini(
         video_info.get("title", ""),
         video_info.get("description", ""),

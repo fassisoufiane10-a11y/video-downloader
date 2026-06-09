@@ -264,11 +264,20 @@ body{background:radial-gradient(ellipse at top,#1a0a2e 0%,#0d0d1a 50%,#050508 10
 </div>
 
 <script>
-let dailyCount = parseInt(localStorage.getItem('pdCount')||'0');
-let lastDate = localStorage.getItem('pdDate')||'';
-const today = new Date().toDateString();
-if(lastDate!==today){dailyCount=0;localStorage.setItem('pdDate',today);}
-updatePills();
+let dailyCount = 0;
+
+async function loadLimit() {
+    try {
+        const res = await fetch('/remaining');
+        const data = await res.json();
+        dailyCount = 5 - (data.remaining || 5);
+        updatePills();
+    } catch(e) {
+        updatePills();
+    }
+}
+
+loadLimit();
 
 function updatePills(){
   document.getElementById('remaining').textContent=Math.max(0,5-dailyCount);

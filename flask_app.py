@@ -145,6 +145,11 @@ def proxy_thumb():
         logger.error(f"THUMB ERROR: {str(e)}")
         return "Image Error", 500
 
+@app.route("/remaining")
+def remaining():
+    ip = request.remote_addr
+    return jsonify({"remaining": get_remaining(ip)})
+
 @app.route("/admin")
 def admin():
     password = request.args.get("key", "")

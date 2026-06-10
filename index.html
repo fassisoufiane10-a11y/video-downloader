@@ -335,7 +335,14 @@ async function fetchVideo(){
     const data = await res.json();
     document.getElementById('loading').style.display = 'none';
     if(data.status === 'error'){ showError(data.message); return; }
-    document.getElementById('thumb').src = data.thumbnail || '';
+    const thumbEl = document.getElementById('thumb');
+if(data.thumbnail){
+  thumbEl.src = data.thumbnail;
+  thumbEl.style.display = 'block';
+  thumbEl.onerror = function(){ this.style.display='none'; };
+} else {
+  thumbEl.style.display = 'none';
+}
     document.getElementById('title').textContent = data.title || '';
     document.getElementById('dlBtn').href = data.download_url || '#';
     document.getElementById('result').style.display = 'block';
